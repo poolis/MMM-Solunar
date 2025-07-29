@@ -68,34 +68,14 @@ Module.register("MMM-Solunar", {
         let moonEmoji = '';
         if (this.solunarData && typeof this.solunarData.moonPhase === 'string') {
             const phase = this.solunarData.moonPhase.toLowerCase();
-            switch (true) {
-                case phase.includes('new'):
-                    moonEmoji = '🌑';
-                    break;
-                case phase.includes('waxing crescent'):
-                    moonEmoji = '🌒';
-                    break;
-                case phase.includes('first quarter'):
-                    moonEmoji = '🌓';
-                    break;
-                case phase.includes('waxing gibbous'):
-                    moonEmoji = '🌔';
-                    break;
-                case phase.includes('full'):
-                    moonEmoji = '🌕';
-                    break;
-                case phase.includes('waning gibbous'):
-                    moonEmoji = '🌖';
-                    break;
-                case phase.includes('last quarter'):
-                    moonEmoji = '🌗';
-                    break;
-                case phase.includes('waning crescent'):
-                    moonEmoji = '🌘';
-                    break;
-                default:
-                    moonEmoji = '';
-            }
+            if (phase.includes('new')) moonEmoji = '🌑';
+            else if (phase.includes('waxing crescent')) moonEmoji = '🌒';
+            else if (phase.includes('first quarter')) moonEmoji = '🌓';
+            else if (phase.includes('waxing gibbous')) moonEmoji = '🌔';
+            else if (phase.includes('full')) moonEmoji = '🌕';
+            else if (phase.includes('waning gibbous')) moonEmoji = '🌖';
+            else if (phase.includes('last quarter')) moonEmoji = '🌗';
+            else if (phase.includes('waning crescent')) moonEmoji = '🌘';
         }
         let dayRatingStr = '';
         let dayRatingClass = '';
