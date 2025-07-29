@@ -6,7 +6,8 @@ Module.register("MMM-Solunar", {
     defaults: {
         updateInterval: 60 * 60 * 1000, // 1 hour
         latitude: 40.7128, // Default: New York City
-        longitude: -74.0060 // Default: New York City
+        longitude: -74.0060,// Default: New York City
+        tz: -4 // Default: Eastern Daylight Time (EDT)
     },
 
     start: function() {
@@ -27,11 +28,10 @@ Module.register("MMM-Solunar", {
         if (!timeStr) return '';
         const [hourStr, minStr] = timeStr.split(":");
         let hour = parseInt(hourStr, 10);
-        const min = minStr;
         const ampm = hour >= 12 ? "PM" : "AM";
         hour = hour % 12;
         if (hour === 0) hour = 12;
-        return `${hour}:${min} ${ampm}`;
+        return `${hour}:${minStr} ${ampm}`;
     },
 
     getDom: function() {
@@ -96,7 +96,6 @@ Module.register("MMM-Solunar", {
             }
             table += `</table>`;
             wrapper.innerHTML =
-                `<h2 style='margin-bottom:0.5em;font-size:2em;'>Solunar info 🐟</h2>` +
                 (moonEmoji ? `<strong>Moon phase:</strong> <span style='font-size:2em;'>${moonEmoji}</span><br>` : "") +
                 (dayRatingStr ? `<strong>Day Rating:</strong> ${dayRatingStr}<br>` : "") +
                 table;
@@ -111,8 +110,9 @@ Module.register("MMM-Solunar", {
         const now = new Date();
         const lat = this.config.latitude;
         const lon = this.config.longitude;
-        const dateStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
-        const url = `https://api.solunar.org/solunar/${lat},${lon},${dateStr},0`;
+        const tz = this.config.tz;
+        const dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
+        const url = `https://api.solunar.org/solunar/${lat},${lon},${dateStr},${tz}`;
         
         fetch(url)
             .then(response => response.json())
