@@ -12,10 +12,18 @@ Module.register("MMM-Solunar", {
 
     start: function() {
         this.loaded = false;
-        this.getData();
+        this.sendSocketNotification("GET_SOLUNAR_DATA", {
+            latitude: this.config.latitude,
+            longitude: this.config.longitude,
+            tz: this.config.tz
+        });
         var self = this;
         setInterval(function() {
-            self.getData();
+            self.sendSocketNotification("GET_SOLUNAR_DATA", {
+                latitude: self.config.latitude,
+                longitude: self.config.longitude,
+                tz: self.config.tz
+            });
         }, this.config.updateInterval);
     },
 
@@ -34,9 +42,21 @@ Module.register("MMM-Solunar", {
         return `${hour}:${minStr} ${ampm}`;
     },
 
+    getDayRatingInfo: function(dayRating) {
+        const DAY_RATING_MAP = {
+            0: ["Avg", "solunar-ok"],
+            1: ["Avg+", "solunar-ok"],
+            2: ["Good", "solunar-good"],
+            3: ["Better", "solunar-good"],
+            4: ["Best", "solunar-great"],
+            5: ["Season's Best", "solunar-great"]
+        };
+        return DAY_RATING_MAP[dayRating] || ["", ""];
+    },
+
     getDom: function() {
         var wrapper = document.createElement("div");
-        wrapper.style.textAlign = "center";
+        wrapper.className = "solunar-wrapper";
         if (!this.loaded) {
             wrapper.innerHTML = "Loading solunar data...";
             return wrapper;
@@ -48,26 +68,39 @@ Module.register("MMM-Solunar", {
         let moonEmoji = '';
         if (this.solunarData && typeof this.solunarData.moonPhase === 'string') {
             const phase = this.solunarData.moonPhase.toLowerCase();
-            if (phase.includes('new')) moonEmoji = '🌑';
-            else if (phase.includes('waxing crescent')) moonEmoji = '🌒';
-            else if (phase.includes('first quarter')) moonEmoji = '🌓';
-            else if (phase.includes('waxing gibbous')) moonEmoji = '🌔';
-            else if (phase.includes('full')) moonEmoji = '🌕';
-            else if (phase.includes('waning gibbous')) moonEmoji = '🌖';
-            else if (phase.includes('last quarter')) moonEmoji = '🌗';
-            else if (phase.includes('waning crescent')) moonEmoji = '🌘';
+            switch (true) {
+                case phase.includes('new'):
+                    moonEmoji = '🌑';
+                    break;
+                case phase.includes('waxing crescent'):
+                    moonEmoji = '🌒';
+                    break;
+                case phase.includes('first quarter'):
+                    moonEmoji = '🌓';
+                    break;
+                case phase.includes('waxing gibbous'):
+                    moonEmoji = '🌔';
+                    break;
+                case phase.includes('full'):
+                    moonEmoji = '🌕';
+                    break;
+                case phase.includes('waning gibbous'):
+                    moonEmoji = '🌖';
+                    break;
+                case phase.includes('last quarter'):
+                    moonEmoji = '🌗';
+                    break;
+                case phase.includes('waning crescent'):
+                    moonEmoji = '🌘';
+                    break;
+                default:
+                    moonEmoji = '';
+            }
         }
         let dayRatingStr = '';
+        let dayRatingClass = '';
         if (this.solunarData && typeof this.solunarData.dayRating !== 'undefined') {
-            const DAY_RATING_MAP = {
-                0: "Avg",
-                1: "Avg+",
-                2: "Good",
-                3: "Better",
-                4: "Best",
-                5: "Season's Best"
-            };
-            dayRatingStr = DAY_RATING_MAP[this.solunarData.dayRating] || '';
+            [dayRatingStr, dayRatingClass] = this.getDayRatingInfo(this.solunarData.dayRating);
         }
         // Build major/minor time ranges
         let majorRanges = [];
@@ -84,55 +117,41 @@ Module.register("MMM-Solunar", {
         if (this.solunarData.minor2Start && this.solunarData.minor2Stop) {
             minorRanges.push(`${this.toAmPm(this.solunarData.minor2Start)} - ${this.toAmPm(this.solunarData.minor2Stop)}`);
         }
-        // Align the ranges in a table
-        if (majorRanges.length > 0 || minorRanges.length > 0) {
-            let table = `<table style='width:100%;text-align:center;'>`;
-            table += `<tr><th style='text-align:center;'>Major</th><th style='text-align:center;'>Minor</th></tr>`;
-            for (let i = 0; i < Math.max(majorRanges.length, minorRanges.length); i++) {
-                table += `<tr>`;
-                table += `<td style='font-size:1.5em;white-space:nowrap;'>${majorRanges[i] || ''}</td>`;
-                table += `<td style='font-size:1.5em;white-space:nowrap;'>${minorRanges[i] || ''}</td>`;
-                table += `</tr>`;
+        // Show Major and Minor tables stacked vertically
+        let majorTable = "";
+        if (majorRanges.length > 0) {
+            majorTable = `<table class='solunar-table'><tr><th>Major Times</th></tr>`;
+            for (let i = 0; i < majorRanges.length; i++) {
+                majorTable += `<tr><td class='solunar-major'>${majorRanges[i]}</td></tr>`;
             }
-            table += `</table>`;
+            majorTable += `</table>`;
+        }
+        let minorTable = "";
+        if (minorRanges.length > 0) {
+            minorTable = `<table class='solunar-table'><tr><th>Minor Times</th></tr>`;
+            for (let i = 0; i < minorRanges.length; i++) {
+                minorTable += `<tr><td class='solunar-minor'>${minorRanges[i]}</td></tr>`;
+            }
+            minorTable += `</table>`;
+        }
+        if (majorTable || minorTable) {
             wrapper.innerHTML =
-                (moonEmoji ? `<strong>Moon phase:</strong> <span style='font-size:2em;'>${moonEmoji}</span><br>` : "") +
-                (dayRatingStr ? `<strong>Day Rating:</strong> ${dayRatingStr}<br>` : "") +
-                table;
+                `<table class='solunar-table'><tr>` +
+                (moonEmoji ? `<td>Moon phase: <span class='solunar-moon'>${moonEmoji}</span></td>` : "<td></td>") +
+                (dayRatingStr ? `<td>Day rating: <span class='${dayRatingClass}'><strong>${dayRatingStr}</strong></span></td>` : "<td></td>") +
+                `</tr></table>` +
+                majorTable + minorTable;
             return wrapper;
         }
         wrapper.innerHTML = "Solunar data will appear here.";
         return wrapper;
     },
 
-    getData: function() {
-        // Fetch solunar data for the current day using the solunar.org API
-        const now = new Date();
-        const lat = this.config.latitude;
-        const lon = this.config.longitude;
-        const tz = this.config.tz;
-        const dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
-        const url = `https://api.solunar.org/solunar/${lat},${lon},${dateStr},${tz}`;
-        
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                this.solunarData = data;
-                this.loaded = true;
-                this.updateDom();
-            })
-            .catch(error => {
-                this.loaded = true;
-                this.solunarData = { error: 'Failed to fetch solunar data.' };
-                this.updateDom();
-            });
-    },
-
-    notificationReceived: function(notification, payload, sender) {
-        // Handle notifications if needed
-    },
-
     socketNotificationReceived: function(notification, payload) {
-        // Handle socket notifications from node_helper
+        if (notification === "SOLUNAR_DATA") {
+            this.solunarData = payload;
+            this.loaded = true;
+            this.updateDom();
+        }
     }
 });
