@@ -3,3 +3,37 @@
 .MMM-Solunar {
     /* Add your styles here */
 }
+
+.solunar-wrapper {
+    text-align: center;
+}
+.solunar-table {
+    width: 100%;
+    text-align: center;
+    
+}
+.solunar-table th {
+    text-align: center;
+}
+.solunar-major, .solunar-minor {
+    white-space: nowrap;
+    font-size: 1.5em;
+}
+.solunar-moon {
+    font-size: 2em;
+}
+.solunar-day-rating {
+}
+.solunar-great {
+    color: green;
+    font-size: 1.5em;
+}
+.solunar-good {
+    color: greenyellow;
+    font-size: 1.4em;
+}
+.solunar-okay {
+    color: yellow;
+    font-size: 1.3em;
+}
+
