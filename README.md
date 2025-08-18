@@ -1,6 +1,8 @@
 # MMM-Solunar
 ## Description
-Solunar calendar module for MagicMirror.  Shows the current days moon phase, rating, and major and minor times.
+Solunar calendar module for MagicMirror.  It displays the current days moon phase, rating (for fishing/hunting), and optimal major and minor times.
+
+Depends on [Solunar API](https://www.solunar.org/) but it does not require a key.
 
 ![Solunar module with moon phase, rating, and major and minor times](img/MMM-Solunar.png "Solunar module")
 
