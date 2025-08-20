@@ -2,7 +2,7 @@
 ## Description
 Solunar calendar module for MagicMirror.  Shows the current days moon phase, rating, and major and minor times.
 
-![Solunar module with moon phase, rating, and major and minor times](img/MMM-Solunar.png "Solunar module")
+![Solunar module with moon phase, rating, and major and minor times](screenshot.png "Solunar module")
 
 ## Installation
 Goto `modules` directory in your MagicMirror install and:
