@@ -1,5 +1,5 @@
 /* MagicMirror² Module: MMM-Solunar
- * Solunar calendar module skeleton
+ * Solunar calendar module
  */
 Module.register("MMM-Solunar", {
     // Default module config.
