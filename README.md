@@ -4,7 +4,7 @@ Solunar calendar module for MagicMirror.  It displays the current days moon phas
 
 Depends on [Solunar API](https://www.solunar.org/) but it does not require a key.
 
-![Solunar module with moon phase, rating, and major and minor times](img/MMM-Solunar.png "Solunar module")
+![Solunar module with moon phase, rating, and major and minor times](screenshot.png "Solunar module")
 
 ## Installation
 Goto `modules` directory in your MagicMirror install and:
