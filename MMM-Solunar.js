@@ -7,7 +7,8 @@ Module.register("MMM-Solunar", {
         updateInterval: 60 * 60 * 1000, // 1 hour
         latitude: 40.7128, // Default: New York City
         longitude: -74.0060,// Default: New York City
-        tz: -4 // Default: Eastern Daylight Time (EDT)
+        tz: -4, // Default: Eastern Daylight Time (EDT)
+        apiProvider: "auto" // Options: "auto", "metNo", or "solunarOrg"
     },
 
     start: function() {
@@ -15,14 +16,16 @@ Module.register("MMM-Solunar", {
         this.sendSocketNotification("GET_SOLUNAR_DATA", {
             latitude: this.config.latitude,
             longitude: this.config.longitude,
-            tz: this.config.tz
+            tz: this.config.tz,
+            apiProvider: this.config.apiProvider
         });
         var self = this;
         setInterval(function() {
             self.sendSocketNotification("GET_SOLUNAR_DATA", {
                 latitude: self.config.latitude,
                 longitude: self.config.longitude,
-                tz: self.config.tz
+                tz: self.config.tz,
+                apiProvider: self.config.apiProvider
             });
         }, this.config.updateInterval);
     },
